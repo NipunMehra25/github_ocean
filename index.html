@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Github Ocean</title>
+    <link
+      rel="preload"
+      href="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4"
+      as="video"
+      type="video/mp4"
+    />
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon"       href="./favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16"  href="./favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32"  href="./favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180"     href="./apple-touch-icon.png" />
+    <link rel="manifest"                             href="./site.webmanifest" />
+    <meta name="theme-color"                  content="#061424" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <canvas id="fish-canvas" aria-hidden="true"></canvas>
+
+    <main class="hero">
+      <h1>
+        <span class="hero-title-main">Github Ocean</span>
+        <span class="hero-title-sub">By Nipun Mehra</span>
+      </h1>
+      <p>Find yourself in the Ocean of Developers.</p>
+    </main>
+
+    <section class="warp-panel">
+      <input id="warp-input" type="text" placeholder="Enter GitHub username..." autocomplete="off" spellcheck="false" />
+      <button id="warp-trigger" type="button">Dive</button>
+    </section>
+
+
+    <!-- Sound toggle -->
+    <button id="sound-btn" type="button" aria-label="Toggle ocean sound" title="Toggle ocean sound">
+      <span id="sound-icon">🔇</span>
+    </button>
+
+    <div id="black-overlay" aria-hidden="true">
+      <video id="overlay-video-a" class="overlay-video is-active"
+        src="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
+      <video id="overlay-video-b" class="overlay-video"
+        src="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
+
+      <!-- Left pane: fish + viz labels -->
+      <div class="overlay-left-pane">
+        <!-- Fish name label — shown above the canvas -->
+        <div id="overlay-fish-name" hidden></div>
+
+        <canvas id="overlay-fish-canvas" aria-hidden="true"></canvas>
+
+        <!-- Fish Size Visualization — sits right below canvas -->
+        <div id="fish-viz" hidden>
+          <div class="fish-viz-ruler">
+            <span class="fish-viz-arrow">←</span>
+            <span class="fish-viz-ruler-line"></span>
+            <span id="fish-viz-commits" class="fish-viz-count">0 commits</span>
+            <span class="fish-viz-ruler-line"></span>
+            <span class="fish-viz-arrow">→</span>
+          </div>
+          <div class="fish-viz-width">
+            <span class="fish-viz-width-bracket-left">⌐</span>
+            <span id="fish-viz-repos" class="fish-viz-count">0</span>
+            <span class="fish-viz-width-unit"> repos wide</span>
+            <span class="fish-viz-width-bracket-right">¬</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right pane: GitHub stats panel -->
+      <aside id="github-panel" hidden>
+        <h2 id="github-name">GitHub User</h2>
+
+        <div class="stat-row">
+          <span class="stat-label">Username</span>
+          <strong id="github-username" class="stat-value">-</strong>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Public Repos</span>
+          <strong id="github-repos" class="stat-value">-</strong>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Commits</span>
+          <strong id="github-commits" class="stat-value">-</strong>
+        </div>
+
+        <!-- 16-tier grid -->
+        <div class="tier-grid-wrap" id="tier-grid-wrap" hidden>
+          <div class="tier-grid-label">Tier</div>
+          <div class="tier-grid" id="tier-grid">
+            <!-- 16 cells built by JS -->
+          </div>
+        </div>
+
+        <div class="stat-row stat-row--fish">
+          <span class="stat-label">Assigned Fish</span>
+          <strong id="github-fish" class="stat-value stat-value--fish">-</strong>
+        </div>
+
+        <p id="github-status"></p>
+      </aside>
+
+      <!-- Return pinned to bottom -->
+      <button id="return-btn" type="button" hidden>↩ Return to ocean</button>
+    </div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

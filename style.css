@@ -1,0 +1,407 @@
+:root {
+  color-scheme: light;
+  --title-top: 2vh;
+  --controls-bottom: 1.5rem;
+  --panel-accent: #7dd6f5;
+  --panel-bg: rgba(5, 16, 30, 0.72);
+  --panel-border: rgba(180, 233, 255, 0.20);
+
+  /* 16 tier colours — light-blue → cyan → teal → green → lime → yellow → amber → orange → red → crimson → rose → pink → purple → violet → indigo → gold */
+  --t1:  #5bc8ff;
+  --t2:  #38d9f5;
+  --t3:  #22e8d8;
+  --t4:  #20e896;
+  --t5:  #45ed6a;
+  --t6:  #8cf53a;
+  --t7:  #c0f230;
+  --t8:  #f0e030;
+  --t9:  #f5b820;
+  --t10: #f08020;
+  --t11: #f05030;
+  --t12: #e02860;
+  --t13: #d030a0;
+  --t14: #a030e0;
+  --t15: #7040f8;
+  --t16: #ffd700;
+}
+
+@font-face {
+  font-family: "Ginga";
+  src: url("./fonts/Ginga-r09p.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  margin: 0;
+  font-family: "Times New Roman";
+  overflow: hidden;
+}
+
+/* ── Canvases ── */
+#bg-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  display: block; z-index: 0;
+}
+#fish-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  display: block; z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Hero ── */
+.hero {
+  position: absolute; z-index: 2;
+  width: 100%;
+  top: var(--title-top);
+  left: 50%; transform: translateX(-50%);
+  display: grid; gap: 0.75rem;
+  padding: 0 1rem; text-align: center;
+  color: #ecf7ff;
+  text-shadow: 0 0.15rem 1rem rgba(0,0,0,0.45);
+}
+.hero h1 { margin: 0; line-height: 0.95; }
+.hero-title-main {
+  display: block; font-family: "Ginga";
+  font-size: clamp(4.5rem, 16vw, 20rem);
+  letter-spacing: 0.02em; font-weight: 400;
+}
+.hero-title-sub {
+  display: block; margin-top: 0.55rem;
+  font-size: clamp(1.6rem, 3.8vw, 3rem);
+  font-weight: 400; letter-spacing: 0.03em;
+}
+.hero p { margin: 0; font-size: clamp(1rem, 2vw, 2rem); }
+
+/* ── Warp Panel ── */
+.warp-panel {
+  position: fixed; left: 50%; top: 55%;
+  transform: translateX(-50%);
+  z-index: 4; display: flex;
+  gap: 0.6rem; align-items: center;
+  padding: 0.6rem; border-radius: 999px;
+  background: rgba(8,24,40,0.35);
+  backdrop-filter: blur(6px);
+}
+.warp-panel input {
+  border: 0; outline: none;
+  width: min(58vw, 28rem); border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-size: 1.05rem; color: #0c1f30;
+  transition: box-shadow 0.2s;
+}
+.warp-panel input:focus { box-shadow: 0 0 0 2px var(--panel-accent); }
+.warp-panel button {
+  border: 0; border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-size: 1.05rem; font-weight: 700;
+  color: #052b3b; background: #bdeeff; cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+}
+.warp-panel button:hover:not(:disabled) {
+  background: #9ae6ff; transform: scale(1.05);
+}
+
+
+
+
+/* ── Sound Button ── */
+#sound-btn {
+  position: fixed; top: 1.2rem; right: 1.3rem;
+  z-index: 10;
+  border: 1px solid rgba(180,233,255,0.28);
+  border-radius: 999px; padding: 0.45rem 0.85rem;
+  font-size: 1.2rem; line-height: 1;
+  background: rgba(8,24,40,0.45); backdrop-filter: blur(6px);
+  color: #eef7ff; cursor: pointer;
+  transition: background 0.18s, transform 0.12s;
+}
+#sound-btn:hover { background: rgba(8,24,40,0.75); transform: scale(1.08); }
+
+/* ── Overlay shell ── */
+#black-overlay {
+  position: fixed; inset: 0; z-index: 9;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; overflow: hidden;
+}
+#black-overlay.active { pointer-events: auto; }
+
+.overlay-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transition: opacity 120ms linear;
+  transform: translateZ(0); backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+.overlay-video.is-active { opacity: 1; }
+
+/* ── 3-column layout inside overlay ── */
+/* Left pane: fish + viz  |  hidden centre gap  |  Right pane: stats */
+.overlay-left-pane {
+  position: absolute;
+  left: clamp(0.5rem, 2vw, 2rem);
+  top: 0; bottom: 0;
+  width: min(52vw, 40rem);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1rem;
+  z-index: 1; pointer-events: none;
+}
+
+/* ── Fish canvas — properly centred in the left pane ── */
+#overlay-fish-canvas {
+  width: 100%;
+  height: min(55vh, 28rem);
+  flex-shrink: 0;
+  opacity: 0;
+  border-radius: 1rem;
+  pointer-events: none;
+}
+
+/* ── Fish name label above the canvas ── */
+#overlay-fish-name {
+  width: 100%;
+  text-align: center;
+  font-family: "Times New Roman", serif;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #d0f4ff;
+  text-shadow: 0 0 18px rgba(100, 220, 255, 0.85),
+               0 0 40px rgba(60, 180, 255, 0.5);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+}
+#overlay-fish-name.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ── Fish Size Visualization ── */
+#fish-viz {
+  width: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.45rem;
+  opacity: 0; transition: opacity 0.55s ease;
+  pointer-events: none;
+}
+#fish-viz.visible { opacity: 1; }
+
+.fish-viz-ruler {
+  display: flex; align-items: center;
+  width: 100%; gap: 0;
+}
+.fish-viz-arrow {
+  color: var(--panel-accent);
+  font-size: 1.05rem; font-weight: 700;
+  flex-shrink: 0; padding: 0 2px;
+}
+.fish-viz-ruler-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125,214,245,0.5), transparent);
+}
+.fish-viz-count {
+  font-size: clamp(0.7rem, 1.15vw, 0.9rem);
+  font-weight: 700; color: #d4f5ff;
+  white-space: nowrap; padding: 0 0.4rem;
+  text-shadow: 0 0 12px rgba(100,220,255,0.7);
+}
+.fish-viz-width {
+  display: flex; align-items: center;
+  gap: 0.25rem;
+  font-size: clamp(0.65rem, 1.05vw, 0.82rem);
+  color: #9de8ff; opacity: 0.88;
+}
+.fish-viz-width-bracket-left,
+.fish-viz-width-bracket-right {
+  color: var(--panel-accent); font-size: 1.1em;
+}
+.fish-viz-width-unit { opacity: 0.7; }
+
+/* ── Return button — pinned to bottom centre ── */
+#return-btn {
+  position: absolute;
+  bottom: 2.2rem; left: 50%; transform: translateX(-50%);
+  z-index: 2;
+  border: 0; border-radius: 999px;
+  padding: 0.85rem 2.2rem;
+  font-size: 1.1rem; font-weight: 700;
+  color: #06233a; background: #dbf6ff; cursor: pointer;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+  box-shadow: 0 4px 24px rgba(0,180,255,0.22);
+  letter-spacing: 0.01em;
+}
+#return-btn:hover {
+  background: #b2efff; transform: translateX(-50%) scale(1.06);
+  box-shadow: 0 6px 32px rgba(0,200,255,0.35);
+}
+
+/* ── GitHub panel ── */
+#github-panel {
+  position: absolute;
+  right: clamp(0.5rem, 2vw, 2rem);
+  top: 50%; transform: translateY(-50%);
+  z-index: 1;
+  width: min(34vw, 27rem);
+  padding: 1.4rem 1.5rem 1.2rem;
+  border-radius: 1.4rem;
+  color: #eef7ff;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 50px rgba(0,120,200,0.14),
+              0 2px 0 rgba(255,255,255,0.05) inset;
+}
+
+#github-panel h2 {
+  margin: 0 0 1rem 0;
+  font-size: clamp(1.15rem, 2.3vw, 1.7rem);
+  color: #d6f4ff; letter-spacing: 0.01em;
+  border-bottom: 1px solid rgba(125,214,245,0.15);
+  padding-bottom: 0.65rem;
+}
+
+.stat-row {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 0.42rem 0.55rem;
+  margin: 0.12rem 0;
+  border-radius: 0.6rem; cursor: default;
+  transition: background 0.18s;
+  gap: 0.5rem;
+}
+.stat-row:hover { background: rgba(125,214,245,0.08); }
+.stat-label {
+  font-size: clamp(0.82rem, 1.25vw, 0.98rem);
+  opacity: 0.7; white-space: nowrap;
+}
+.stat-value {
+  font-size: clamp(0.9rem, 1.4vw, 1.08rem);
+  color: #c0ecff; text-align: right; word-break: break-all;
+}
+.stat-row--fish {
+  margin-top: 0.5rem;
+  background: rgba(125,214,245,0.07);
+  border: 1px solid rgba(125,214,245,0.16);
+}
+.stat-value--fish {
+  color: var(--panel-accent);
+  font-size: clamp(0.88rem, 1.35vw, 1.04rem);
+}
+
+@keyframes countPop {
+  0%   { transform: scale(1.3); opacity: 0.5; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.stat-value.pop { animation: countPop 0.3s ease-out forwards; }
+
+/* ── 16-Tier Grid ── */
+.tier-grid-wrap {
+  margin: 0.8rem 0 0.3rem;
+  padding: 0.65rem 0.6rem 0.55rem;
+  border-radius: 0.8rem;
+  background: rgba(0,20,40,0.45);
+  border: 1px solid rgba(125,214,245,0.12);
+}
+.tier-grid-label {
+  font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+  opacity: 0.5; color: #aee9ff; margin-bottom: 0.45rem;
+}
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+.tier-cell {
+  position: relative;
+  height: 22px; border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.28;
+  transition: opacity 0.25s, transform 0.22s, box-shadow 0.25s, outline 0.15s;
+  display: flex; align-items: center; justify-content: center;
+  /* Tooltip */
+}
+.tier-cell:hover {
+  opacity: 0.75;
+  transform: scaleY(1.2);
+}
+/* Tooltip: fish name on hover */
+.tier-cell::after {
+  content: attr(data-fish);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%; transform: translateX(-50%);
+  background: rgba(5,16,30,0.92);
+  color: #b6e9ff;
+  font-size: 0.6rem; font-family: "Times New Roman";
+  white-space: nowrap; padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(125,214,245,0.25);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s;
+  z-index: 10;
+}
+.tier-cell:hover::after { opacity: 1; }
+.tier-cell .tier-num {
+  font-size: 0.55rem; font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  line-height: 1;
+  pointer-events: none;
+}
+.tier-cell.active {
+  opacity: 1;
+  transform: scaleY(1.4);
+  box-shadow: 0 0 12px 3px var(--cell-color, #7dd6f5);
+}
+.tier-cell.below-active { opacity: 0.55; }
+/* Previewing ring — when user clicks a different tier to peek at that fish */
+.tier-cell.previewing {
+  opacity: 1;
+  outline: 2px solid rgba(255,255,255,0.75);
+  outline-offset: 2px;
+  transform: scaleY(1.2);
+}
+/* Colour each tier via inline CSS var set by JS */
+.tier-cell { background: var(--cell-color, #5bc8ff); }
+
+#github-status {
+  margin-top: 0.65rem;
+  font-style: italic; opacity: 0.7;
+  font-size: clamp(0.72rem, 1.1vw, 0.88rem);
+  line-height: 1.45; color: #aacfe8;
+}
+
+/* ── Mobile ── */
+@media (max-width: 700px) {
+  :root { --title-top: 1.5vh; --controls-bottom: 1rem; }
+
+  .warp-panel { top: 58%; width: min(92vw, 30rem); }
+  .warp-panel input { width: 100%; font-size: 0.95rem; }
+
+  .overlay-left-pane {
+    left: 0.75rem; right: 0.75rem;
+    width: auto; top: 0.5rem; bottom: auto;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 0.5rem;
+  }
+  #overlay-fish-canvas { height: min(30vh, 11rem); }
+  #github-panel {
+    right: 0.75rem; left: 0.75rem;
+    top: auto; bottom: 5.5rem;
+    transform: none; width: auto;
+  }
+  .tier-grid { grid-template-columns: repeat(8, 1fr); }
+}
