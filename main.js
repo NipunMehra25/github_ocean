@@ -402,6 +402,14 @@ let assignedTierFishPath = "";
 let audioCtx   = null;
 let oceanNodes = null;
 let soundOn    = false;
+let soundSuspendTimer = null;
+
+function setSoundUiState(isOn) {
+  soundBtn.setAttribute("aria-pressed", String(isOn));
+  soundBtn.title = isOn ? "Mute ocean sound" : "Unmute ocean sound";
+  soundIcon.textContent = isOn ? "🔊" : "🔇";
+}
+
 
 function buildOceanSound(ctx) {
   // Layer 1: pink-ish noise via filtered white noise
@@ -464,30 +472,81 @@ function buildOceanSound(ctx) {
   return { master, noise, lfo, rumble };
 }
 
-function startOcean() {
+async function startOcean() {
+  if (!window.AudioContext && !window.webkitAudioContext) {
+    setSoundUiState(false);
+    return;
+  }
+
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     oceanNodes = buildOceanSound(audioCtx);
   }
-  if (audioCtx.state === "suspended") audioCtx.resume();
+
+  if (soundSuspendTimer) {
+    clearTimeout(soundSuspendTimer);
+    soundSuspendTimer = null;
+  }
+
+  if (audioCtx.state !== "running") {
+    await audioCtx.resume();
+  }
+
   oceanNodes.master.gain.cancelScheduledValues(audioCtx.currentTime);
-  oceanNodes.master.gain.setTargetAtTime(0.55, audioCtx.currentTime, 1.5);
-  soundIcon.textContent = "🔊";
+  oceanNodes.master.gain.setTargetAtTime(0.55, audioCtx.currentTime, 0.35);
   soundOn = true;
+  setSoundUiState(true);
 }
 
 function stopOcean() {
-  if (!audioCtx || !oceanNodes) return;
+  if (!audioCtx || !oceanNodes) {
+    soundOn = false;
+    setSoundUiState(false);
+    return;
+  }
+
   oceanNodes.master.gain.cancelScheduledValues(audioCtx.currentTime);
-  oceanNodes.master.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.8);
-  soundIcon.textContent = "🔇";
+  oceanNodes.master.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.2);
   soundOn = false;
+  setSoundUiState(false);
+
+  if (soundSuspendTimer) clearTimeout(soundSuspendTimer);
+  soundSuspendTimer = setTimeout(() => {
+    if (!soundOn && audioCtx?.state === "running") {
+      audioCtx.suspend().catch(() => {});
+    }
+  }, 600);
 }
 
-soundBtn.addEventListener("click", () => {
-  if (soundOn) stopOcean();
-  else startOcean();
+soundBtn.addEventListener("click", async () => {
+  if (soundOn) {
+    stopOcean();
+  } else {
+    try {
+      await startOcean();
+    } catch {
+      soundOn = false;
+      setSoundUiState(false);
+    }
+  }
 });
+
+// Default to unmuted.
+setSoundUiState(true);
+startOcean().catch(() => {
+  soundOn = false;
+  setSoundUiState(false);
+});
+
+// If autoplay is blocked, start audio on first user interaction.
+const bootstrapOceanAudio = () => {
+  if (soundOn) return;
+  startOcean().catch(() => {});
+  window.removeEventListener("pointerdown", bootstrapOceanAudio);
+  window.removeEventListener("keydown", bootstrapOceanAudio);
+};
+window.addEventListener("pointerdown", bootstrapOceanAudio, { once: true });
+window.addEventListener("keydown", bootstrapOceanAudio, { once: true });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function clamp01(v) { return Math.min(1, Math.max(0, v)); }
