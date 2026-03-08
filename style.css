@@ -146,8 +146,9 @@ html, body {
 .overlay-left-pane {
   position: absolute;
   left: clamp(0.5rem, 2vw, 2rem);
+  right: calc(min(34vw, 27rem) + clamp(0.5rem, 2vw, 2rem) + 1.1rem);
   top: 0; bottom: 0;
-  width: min(60vw, 50rem);
+  width: auto;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 1rem;
@@ -157,7 +158,7 @@ html, body {
 /* ── Fish canvas — properly centred in the left pane ── */
 #overlay-fish-canvas {
   width: 100%;
-  height: min(68vh, 38rem);
+  height: min(72vh, 42rem);
   flex-shrink: 0;
   opacity: 0;
   border-radius: 1rem;
@@ -432,7 +433,24 @@ html, body {
   line-height: 1.45; color: #aacfe8;
 }
 
-/* ── Mobile ── */
+/* Tablet */
+@media (max-width: 1100px) {
+  .overlay-left-pane {
+    left: 0.75rem;
+    right: calc(min(40vw, 23rem) + 0.9rem);
+  }
+  #overlay-fish-canvas { height: min(64vh, 34rem); }
+  #github-panel {
+    width: min(40vw, 23rem);
+    padding: 1rem 1rem 0.9rem;
+  }
+  #return-btn {
+    padding: 0.72rem 1.55rem;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
 @media (max-width: 700px) {
   :root { --title-top: 1.5vh; --controls-bottom: 1rem; }
 
@@ -440,19 +458,62 @@ html, body {
   .warp-panel input { width: 100%; font-size: 0.95rem; }
 
   .overlay-left-pane {
-    left: 0.75rem; right: 0.75rem;
-    width: auto; top: 0.5rem; bottom: auto;
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    top: max(0.4rem, env(safe-area-inset-top));
+    bottom: auto;
     height: auto;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 0.5rem;
+    padding-top: 0.25rem;
+    gap: 0.45rem;
   }
-  #overlay-fish-canvas { height: min(40vh, 16rem); }
+  #overlay-fish-canvas {
+    height: clamp(15rem, 46vh, 21rem);
+    width: 100%;
+  }
+  #overlay-fish-name {
+    font-size: clamp(0.95rem, 4.3vw, 1.2rem);
+  }
+  #fish-viz { display: none; }
+
   #github-panel {
-    right: 0.75rem; left: 0.75rem;
-    top: auto; bottom: 5.5rem;
-    transform: none; width: auto;
+    right: 0.75rem;
+    left: 0.75rem;
+    top: auto;
+    bottom: calc(4.8rem + env(safe-area-inset-bottom));
+    transform: none;
+    width: auto;
+    max-height: 40vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.85rem 0.85rem 0.8rem;
   }
-  .tier-grid { grid-template-columns: repeat(8, 1fr); }
+  #github-panel h2 {
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.45rem;
+  }
+  .tier-grid-wrap { margin-top: 0.55rem; }
+  .tier-grid { grid-template-columns: repeat(8, 1fr); gap: 4px; }
+  .tier-cell { height: 22px; }
+  .fish-lore {
+    font-size: 0.82rem;
+    line-height: 1.35;
+    padding: 0.5rem 0.6rem;
+    min-height: 0;
+  }
+  #return-btn {
+    bottom: max(0.45rem, env(safe-area-inset-bottom));
+    width: min(92vw, 20rem);
+    padding: 0.72rem 1.1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-height: 760px) and (max-width: 900px) {
+  #overlay-fish-canvas { height: 42vh; }
+  #github-panel { max-height: 38vh; }
 }
