@@ -3,8 +3,8 @@
   --title-top: 2vh;
   --controls-bottom: 1.5rem;
   --panel-accent: #7dd6f5;
-  --panel-bg: rgba(5, 16, 30, 0.72);
-  --panel-border: rgba(180, 233, 255, 0.20);
+  --panel-bg: linear-gradient(145deg, rgba(18, 52, 84, 0.56), rgba(5, 27, 51, 0.7));
+  --panel-border: rgba(180, 233, 255, 0.3);
 
   /* 16 tier colours — light-blue → cyan → teal → green → lime → yellow → amber → orange → red → crimson → rose → pink → purple → violet → indigo → gold */
   --t1:  #5bc8ff;
@@ -147,7 +147,7 @@ html, body {
   position: absolute;
   left: clamp(0.5rem, 2vw, 2rem);
   top: 0; bottom: 0;
-  width: min(52vw, 40rem);
+  width: min(60vw, 50rem);
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 1rem;
@@ -157,7 +157,7 @@ html, body {
 /* ── Fish canvas — properly centred in the left pane ── */
 #overlay-fish-canvas {
   width: 100%;
-  height: min(55vh, 28rem);
+  height: min(68vh, 38rem);
   flex-shrink: 0;
   opacity: 0;
   border-radius: 1rem;
@@ -253,13 +253,25 @@ html, body {
   z-index: 1;
   width: min(34vw, 27rem);
   padding: 1.4rem 1.5rem 1.2rem;
-  border-radius: 1.4rem;
+  border-radius: 1.55rem;
   color: #eef7ff;
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 0 50px rgba(0,120,200,0.14),
-              0 2px 0 rgba(255,255,255,0.05) inset;
+  backdrop-filter: blur(10px) saturate(1.08);
+  box-shadow:
+    0 8px 26px rgba(0, 18, 44, 0.38),
+    0 0 0 1px rgba(170, 229, 255, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+#github-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0.35rem;
+  border-radius: 1.2rem;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 15% 0%, rgba(168, 236, 255, 0.2), transparent 58%);
+  mix-blend-mode: screen;
 }
 
 #github-panel h2 {
@@ -273,13 +285,18 @@ html, body {
 .stat-row {
   display: flex; align-items: center;
   justify-content: space-between;
-  padding: 0.42rem 0.55rem;
+  padding: 0.5rem 0.65rem;
   margin: 0.12rem 0;
-  border-radius: 0.6rem; cursor: default;
-  transition: background 0.18s;
+  border-radius: 0.72rem; cursor: default;
+  transition: background 0.18s, border-color 0.18s;
   gap: 0.5rem;
+  border: 1px solid transparent;
+  background: rgba(167, 225, 255, 0.04);
 }
-.stat-row:hover { background: rgba(125,214,245,0.08); }
+.stat-row:hover {
+  background: rgba(125,214,245,0.12);
+  border-color: rgba(159, 224, 255, 0.2);
+}
 .stat-label {
   font-size: clamp(0.82rem, 1.25vw, 0.98rem);
   opacity: 0.7; white-space: nowrap;
@@ -290,12 +307,13 @@ html, body {
 }
 .stat-row--fish {
   margin-top: 0.5rem;
-  background: rgba(125,214,245,0.07);
-  border: 1px solid rgba(125,214,245,0.16);
+  background: linear-gradient(90deg, rgba(117, 220, 255, 0.16), rgba(104, 160, 255, 0.09));
+  border: 1px solid rgba(154,230,255,0.24);
 }
 .stat-value--fish {
   color: var(--panel-accent);
   font-size: clamp(0.88rem, 1.35vw, 1.04rem);
+  text-shadow: 0 0 14px rgba(90, 208, 255, 0.52);
 }
 
 @keyframes countPop {
@@ -304,35 +322,56 @@ html, body {
 }
 .stat-value.pop { animation: countPop 0.3s ease-out forwards; }
 
-/* ── 16-Tier Grid ── */
+.tier-band-row {
+  display: flex;
+  gap: 0.45rem;
+  margin: 0.4rem 0 0.6rem;
+}
+.tier-band {
+  flex: 1;
+  text-align: center;
+  font-size: 0.65rem;
+  color: #c2eeff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.32rem 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(163, 228, 255, 0.26);
+  background: rgba(107, 196, 244, 0.12);
+}
+
+/* ── Tier Grid ── */
 .tier-grid-wrap {
-  margin: 0.8rem 0 0.3rem;
+  margin: 0.76rem 0 0.4rem;
   padding: 0.65rem 0.6rem 0.55rem;
   border-radius: 0.8rem;
-  background: rgba(0,20,40,0.45);
-  border: 1px solid rgba(125,214,245,0.12);
+  background: rgba(0,20,40,0.38);
+  border: 1px solid rgba(125,214,245,0.2);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
 }
 .tier-grid-label {
-  font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+  font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
   opacity: 0.5; color: #aee9ff; margin-bottom: 0.45rem;
 }
 .tier-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 4px;
+  gap: 5px;
 }
 .tier-cell {
   position: relative;
-  height: 22px; border-radius: 4px;
+  height: 24px; border-radius: 6px;
   cursor: pointer;
   opacity: 0.28;
-  transition: opacity 0.25s, transform 0.22s, box-shadow 0.25s, outline 0.15s;
+  transition: opacity 0.25s, transform 0.22s, box-shadow 0.25s, outline 0.15s, filter 0.2s;
   display: flex; align-items: center; justify-content: center;
-  /* Tooltip */
+  border: 1px solid rgba(255,255,255,0.12);
+  filter: saturate(0.95);
 }
 .tier-cell:hover {
-  opacity: 0.75;
+  opacity: 0.86;
   transform: scaleY(1.2);
+  filter: saturate(1.12);
 }
 /* Tooltip: fish name on hover */
 .tier-cell::after {
@@ -361,7 +400,7 @@ html, body {
 .tier-cell.active {
   opacity: 1;
   transform: scaleY(1.4);
-  box-shadow: 0 0 12px 3px var(--cell-color, #7dd6f5);
+  box-shadow: 0 0 14px 4px var(--cell-color, #7dd6f5);
 }
 .tier-cell.below-active { opacity: 0.55; }
 /* Previewing ring — when user clicks a different tier to peek at that fish */
@@ -374,8 +413,20 @@ html, body {
 /* Colour each tier via inline CSS var set by JS */
 .tier-cell { background: var(--cell-color, #5bc8ff); }
 
+.fish-lore {
+  margin: 0.55rem 0 0;
+  padding: 0.6rem 0.72rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(154,230,255,0.22);
+  background: linear-gradient(120deg, rgba(107, 196, 244, 0.15), rgba(56, 121, 207, 0.12));
+  color: #d7f4ff;
+  font-size: clamp(0.72rem, 1.05vw, 0.88rem);
+  line-height: 1.45;
+  min-height: 3.6em;
+}
+
 #github-status {
-  margin-top: 0.65rem;
+  margin-top: 0.62rem;
   font-style: italic; opacity: 0.7;
   font-size: clamp(0.72rem, 1.1vw, 0.88rem);
   line-height: 1.45; color: #aacfe8;
@@ -397,7 +448,7 @@ html, body {
     justify-content: flex-start;
     padding-top: 0.5rem;
   }
-  #overlay-fish-canvas { height: min(30vh, 11rem); }
+  #overlay-fish-canvas { height: min(40vh, 16rem); }
   #github-panel {
     right: 0.75rem; left: 0.75rem;
     top: auto; bottom: 5.5rem;

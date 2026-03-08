@@ -2,6 +2,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
+const PERFORMANCE = {
+  maxBgDpr: 1.25,
+  maxFishDpr: 1.35,
+  maxOverlayDpr: 1.0,
+  overlayOpacityStep: 0.02,
+};
+
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const bgCanvas        = document.getElementById("bg-canvas");
 const fishCanvas      = document.getElementById("fish-canvas");
@@ -18,6 +25,9 @@ const githubRepos     = document.getElementById("github-repos");
 const githubCommits   = document.getElementById("github-commits");
 const githubFish      = document.getElementById("github-fish");
 const githubStatus    = document.getElementById("github-status");
+const githubCommitBand = document.getElementById("github-commit-band");
+const githubRepoBand   = document.getElementById("github-repo-band");
+const githubFishLore   = document.getElementById("github-fish-lore");
 const overlayFishCanvas = document.getElementById("overlay-fish-canvas");
 const overlayFishNameEl = document.getElementById("overlay-fish-name");
 
@@ -62,16 +72,16 @@ const overlayVideoReadyPromise = Promise.all(
 );
 
 // ── BG renderer ───────────────────────────────────────────────────────────────
-const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, antialias: true, alpha: true });
-bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxBgDpr));
 bgRenderer.setSize(window.innerWidth, window.innerHeight);
 
 const bgScene  = new THREE.Scene();
 const bgCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
 // ── Fish renderer ─────────────────────────────────────────────────────────────
-const fishRenderer = new THREE.WebGLRenderer({ canvas: fishCanvas, antialias: true, alpha: true });
-fishRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const fishRenderer = new THREE.WebGLRenderer({ canvas: fishCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+fishRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxFishDpr));
 fishRenderer.setSize(window.innerWidth, window.innerHeight);
 fishRenderer.setClearColor(0x000000, 0);
 fishRenderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -100,13 +110,13 @@ const overlayFishRenderer = new THREE.WebGLRenderer({
   alpha: true,
   powerPreference: "high-performance",
 });
-overlayFishRenderer.setPixelRatio(1);
+overlayFishRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxOverlayDpr));
 overlayFishRenderer.setClearColor(0x000000, 0);
 
 const overlayFishScene  = new THREE.Scene();
 overlayFishScene.environment = fishScene.environment;
-const overlayFishCamera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-overlayFishCamera.position.set(0, 0.1, 4.6);
+const overlayFishCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+overlayFishCamera.position.set(0, 0.1, 5.0);
 overlayFishScene.add(new THREE.HemisphereLight(0xdcf5ff, 0x0b2234, 0.9));
 const overlayFishKeyLight = new THREE.DirectionalLight(0xffffff, 1.05);
 overlayFishKeyLight.position.set(3, 2.5, 4);
@@ -173,25 +183,6 @@ window.addEventListener("pointermove", (event) => {
 });
 
 // ── Fish data ─────────────────────────────────────────────────────────────────
-const fishPaths = [
-  "./fish_assets/bream_fish__dorade_royale.glb",
-  "./fish_assets/chelicerate.glb",
-  "./fish_assets/emperor_angelfish_update_v2.glb",
-  "./fish_assets/feather_fish.glb",
-  "./fish_assets/guppie_animated.glb",
-  "./fish_assets/guppy_fish.glb",
-  "./fish_assets/manta_ray_birostris_animated.glb",
-  "./fish_assets/small_fish.glb",
-  "./fish_assets/model_65a_-_longnose_gar.glb",
-  "./fish_assets/model_66a_-_atlantic_sturgeon.glb",
-  "./fish_assets/model_99a_-_whale_shark.glb",
-  "./fish_assets/redcap_oranda_goldfish.glb",
-  "./fish_assets/tuna_fish.glb",
-  "./fish_assets/shark.glb",
-  "./fish_assets/whale.glb",
-  "./fish_assets/mega_whale.glb",
-];
-
 const fishProgression = [
   "./fish_assets/guppy_fish.glb",
   "./fish_assets/guppie_animated.glb",
@@ -200,21 +191,213 @@ const fishProgression = [
   "./fish_assets/feather_fish.glb",
   "./fish_assets/bream_fish__dorade_royale.glb",
   "./fish_assets/emperor_angelfish_update_v2.glb",
+  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb",
   "./fish_assets/model_65a_-_longnose_gar.glb",
   "./fish_assets/model_66a_-_atlantic_sturgeon.glb",
   "./fish_assets/tuna_fish.glb",
   "./fish_assets/manta_ray_birostris_animated.glb",
+  "./fish_assets/liriope_jellyfish_trachymedusae.glb",
   "./fish_assets/shark.glb",
+  "./fish_assets/nile_crocodile_swimming.glb",
+  "./fish_assets/cryptosuchus.glb",
+  "./fish_assets/pistosaur_animated.glb",
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb",
   "./fish_assets/chelicerate.glb",
   "./fish_assets/model_99a_-_whale_shark.glb",
   "./fish_assets/whale.glb",
+  "./fish_assets/glow_whale.glb",
+  "./fish_assets/shadow_leviathan.glb",
   "./fish_assets/mega_whale.glb",
+  "./fish_assets/tinkle_the_blue_ring_octopus.glb",
+  "./fish_assets/reefback.glb",
+  "./fish_assets/tulkun_swimming_loop.glb",
+  "./fish_assets/sea_monster_animated.glb",
+  "./fish_assets/ghost_leviathan.glb",
+  "./fish_assets/kraken_v2.glb",
+  "./fish_assets/moon_harvest_-_leviathan.glb",
+  "./fish_assets/the_leviathan.glb",
 ];
 
-const fishScoreThresholds = [100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000, 15000, 20000, 26000, 34000, 44000, 56000];
+const fishPaths = [...fishProgression];
 
-// Returns a size multiplier for the overlay fish based on its tier.
-// Tier 1 (index 0) → 0.45× (small),  Tier 16 (index 15) → 1.45× (large).
+const COMMIT_BUCKET_LIMITS = [120, 320, 700, 1500, 3200, 7000, 14000];
+const REPO_BUCKET_LIMITS = [4, 10, 21];
+const REPO_BUCKETS = REPO_BUCKET_LIMITS.length + 1;
+
+// Per-model size tuning.
+// Change any value (example: 1.25 = 25% larger, 0.85 = 15% smaller).
+const MODEL_SIZE_OVERRIDES = {
+  "./fish_assets/guppy_fish.glb": 1.0,
+  "./fish_assets/guppie_animated.glb": 1.0,
+  "./fish_assets/small_fish.glb": 1.0,
+  "./fish_assets/redcap_oranda_goldfish.glb": 1.0,
+  "./fish_assets/feather_fish.glb": 1.0,
+  "./fish_assets/bream_fish__dorade_royale.glb": 1.0,
+  "./fish_assets/emperor_angelfish_update_v2.glb": 1.0,
+  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb": 1.0,
+  "./fish_assets/model_65a_-_longnose_gar.glb": 1.0,
+  "./fish_assets/model_66a_-_atlantic_sturgeon.glb": 1.0,
+  "./fish_assets/tuna_fish.glb": 1.0,
+  "./fish_assets/manta_ray_birostris_animated.glb": 1.0,
+  "./fish_assets/liriope_jellyfish_trachymedusae.glb": 1.0,
+  "./fish_assets/shark.glb": 1.3,
+  "./fish_assets/nile_crocodile_swimming.glb": 1.5,
+  "./fish_assets/cryptosuchus.glb": 1.0,
+  "./fish_assets/pistosaur_animated.glb": 1.0,
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": 1.0,
+  "./fish_assets/chelicerate.glb": 1.0,
+  "./fish_assets/model_99a_-_whale_shark.glb": 1.0,
+  "./fish_assets/whale.glb": 1.0,
+  "./fish_assets/glow_whale.glb": 1.0,
+  "./fish_assets/shadow_leviathan.glb": 1.0,
+  "./fish_assets/mega_whale.glb": 1.4,
+  "./fish_assets/tinkle_the_blue_ring_octopus.glb": 3.0,
+  "./fish_assets/reefback.glb": 5.0,
+  "./fish_assets/tulkun_swimming_loop.glb": 1.4,
+  "./fish_assets/sea_monster_animated.glb": 1.0,
+  "./fish_assets/ghost_leviathan.glb": 1.0,
+  "./fish_assets/kraken_v2.glb": 0.7,
+  "./fish_assets/moon_harvest_-_leviathan.glb": 1.3,
+  "./fish_assets/the_leviathan.glb": 1.0,
+};
+
+// Per-model placement/rotation tuning.
+// Axes:
+// x = left/right, y = up/down, z = forward/back
+// yaw = turn left/right, pitch = tilt up/down, roll = tilt sideways (radians)
+// Works in both main scene and overlay scene.
+const MODEL_VIEW_TUNING = {
+  "./fish_assets/guppy_fish.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/guppie_animated.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/small_fish.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/redcap_oranda_goldfish.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/feather_fish.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/bream_fish__dorade_royale.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/emperor_angelfish_update_v2.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/model_65a_-_longnose_gar.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/model_66a_-_atlantic_sturgeon.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/tuna_fish.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/manta_ray_birostris_animated.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/liriope_jellyfish_trachymedusae.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/shark.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/nile_crocodile_swimming.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/cryptosuchus.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/pistosaur_animated.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/chelicerate.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/model_99a_-_whale_shark.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/whale.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/glow_whale.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/shadow_leviathan.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/mega_whale.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/tinkle_the_blue_ring_octopus.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/reefback.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/kraken_v2.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/sea_monster_animated.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/tulkun_swimming_loop.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/ghost_leviathan.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/moon_harvest_-_leviathan.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+  "./fish_assets/the_leviathan.glb": {
+    main:    { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+    overlay: { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 },
+  },
+};
+
+// Returns a size multiplier for the overlay fish based on its tier progression.
 function tierScaleForPath(path) {
   const idx = fishProgression.indexOf(path);
   if (idx < 0) return 1.0;
@@ -226,9 +409,11 @@ function tierScaleForPath(path) {
   if (path.includes("longnose_gar")) scale *= 1.35;
   if (path.includes("atlantic_sturgeon")) scale *= 1.40;
   if (path.includes("manta_ray")) scale *= 1.50;
+  if (path.includes("loggerhead")) scale *= 1.35;
+  if (path.includes("glow_whale")) scale *= 1.35;
+  if (path.includes("shadow_leviathan")) scale *= 1.45;
   
-  // "and the rest above" -> index 11 is shark, index 15 is leviathan
-  if (idx >= 11) scale *= 1.45;
+  if (idx >= 15) scale *= 1.35;
 
   return scale;
 }
@@ -241,6 +426,7 @@ let activeFishIndex  = -1;
 let activeMixer      = null;
 let activeFishHasClips = false;
 let activeBaseYaw    = -Math.PI * 0.5;
+let activeMainTune   = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 };
 
 let fishSpawn        = 1;
 let fishSpawnTarget  = 1;
@@ -253,6 +439,8 @@ let overlayFishBaseYaw       = -Math.PI * 0.5;
 let overlayFishSpawn         = 0;
 let overlayFishSpawnTarget   = 0;
 let overlayFishPreparedForPath = "";
+let activeOverlayTune = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 };
+let lastOverlayMeshOpacity = -1;
 
 let diveDataReady  = false;
 let diveDataMessage = "";
@@ -260,6 +448,7 @@ let diveDataOk     = false;
 let diveCommitCount = 0;
 let divePublicRepos = 0;
 let diveTierIndex   = 0;
+let assignedTierFishPath = "";
 
 const fishYawOverrides = {
   "./fish_assets/bream_fish__dorade_royale.glb":     Math.PI * 0.5,
@@ -269,6 +458,9 @@ const fishYawOverrides = {
   "./fish_assets/model_99a_-_whale_shark.glb":       Math.PI * 0.5,
   "./fish_assets/redcap_oranda_goldfish.glb":        Math.PI * 0.5,
   "./fish_assets/tuna_fish.glb":                     Math.PI * 0.5,
+  "./fish_assets/nile_crocodile_swimming.glb":       Math.PI * 0.5,
+  "./fish_assets/pistosaur_animated.glb":            Math.PI * 0.5,
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": Math.PI,
 };
 
 // ── Ocean sound (Web Audio API, procedural) ───────────────────────────────────
@@ -373,17 +565,34 @@ function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-function fitFishToView(object3d) {
+function modelSizeScale(path) {
+  return MODEL_SIZE_OVERRIDES[path] ?? 1.0;
+}
+
+function modelViewTune(path, view) {
+  const tuning = MODEL_VIEW_TUNING[path]?.[view];
+  if (!tuning) return { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 };
+  return {
+    x: tuning.x ?? 0,
+    y: tuning.y ?? 0,
+    z: tuning.z ?? 0,
+    yaw: tuning.yaw ?? 0,
+    pitch: tuning.pitch ?? 0,
+    roll: tuning.roll ?? 0,
+  };
+}
+
+function fitFishToView(object3d, path) {
   const box    = new THREE.Box3().setFromObject(object3d);
   const size   = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
   const maxSize = Math.max(size.x, size.y, size.z) || 1;
-  const scale   = 2.2 / maxSize;
+  const scale   = (2.2 / maxSize) * modelSizeScale(path);
   object3d.scale.setScalar(scale);
   object3d.position.sub(center.multiplyScalar(scale));
 }
 
-function fitFishToOverlay(object3d, tierScale = 1.0) {
+function fitFishToOverlay(object3d, path, tierScale = 1.0) {
   const box    = new THREE.Box3().setFromObject(object3d);
   const size   = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -392,17 +601,19 @@ function fitFishToOverlay(object3d, tierScale = 1.0) {
   const maxSize = Math.max(size.x, size.y, size.z) || 1;
   let scale = (1.75 * tierScale) / maxSize;
 
-  // Prevent horizontal clipping for extremely long/large fish
-  // Camera Z = 4.6, FOV = 34. Visible height ~ 2.8.
-  // Visible width ~ 2.8 * camera aspect.
-  // We leave a small margin (0.95 limit).
+  // Prevent horizontal clipping for extremely long/large fish using current camera framing.
   if (overlayFishCamera && overlayFishCamera.aspect) {
-    const visibleWidth = 2.8 * overlayFishCamera.aspect * 0.95;
+    const fovRad = THREE.MathUtils.degToRad(overlayFishCamera.fov);
+    const visibleHeight = 2 * Math.tan(fovRad * 0.5) * overlayFishCamera.position.z * 0.92;
+    const visibleWidth = visibleHeight * overlayFishCamera.aspect;
     const renderedWidth = maxSize * scale;
     if (renderedWidth > visibleWidth) {
       scale *= (visibleWidth / renderedWidth);
     }
   }
+
+  // Apply user tuning last so MODEL_SIZE_OVERRIDES always has visible effect.
+  scale *= modelSizeScale(path);
 
   object3d.scale.setScalar(scale);
   object3d.position.sub(center.multiplyScalar(scale));
@@ -483,15 +694,66 @@ const FISH_DISPLAY_NAMES = {
   "./fish_assets/feather_fish.glb":                  "Featherback",
   "./fish_assets/bream_fish__dorade_royale.glb":     "Dorade Royale",
   "./fish_assets/emperor_angelfish_update_v2.glb":   "Emperor Angelfish",
+  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb": "Loggerhead Titan",
   "./fish_assets/model_65a_-_longnose_gar.glb":      "Longnose Gar",
   "./fish_assets/model_66a_-_atlantic_sturgeon.glb": "Atlantic Sturgeon",
   "./fish_assets/tuna_fish.glb":                     "Bluefin Tuna",
   "./fish_assets/manta_ray_birostris_animated.glb":  "Giant Manta Ray",
+  "./fish_assets/liriope_jellyfish_trachymedusae.glb": "Liriope Jelly",
   "./fish_assets/shark.glb":                         "Great White Shark",
+  "./fish_assets/nile_crocodile_swimming.glb":       "Nile Crocodile",
+  "./fish_assets/cryptosuchus.glb":                  "Cryptosuchus",
+  "./fish_assets/pistosaur_animated.glb":            "Pistosaur",
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": "Abyss Sentinel",
   "./fish_assets/chelicerate.glb":                   "Deep-Sea Chelicerate",
   "./fish_assets/model_99a_-_whale_shark.glb":       "Whale Shark",
-  "./fish_assets/whale.glb":                         "Blue Whale",
+  "./fish_assets/whale.glb":                         "Orca",
+  "./fish_assets/glow_whale.glb":                    "Lumen Whale",
+  "./fish_assets/shadow_leviathan.glb":              "Shadow Leviathan",
   "./fish_assets/mega_whale.glb":                    "The Leviathan",
+  "./fish_assets/tinkle_the_blue_ring_octopus.glb":  "Blue Ring Octopus",
+  "./fish_assets/reefback.glb":                      "Reefback",
+  "./fish_assets/tulkun_swimming_loop.glb":          "Tulkun",
+  "./fish_assets/sea_monster_animated.glb":          "Sea Monster",
+  "./fish_assets/ghost_leviathan.glb":               "Ghost Leviathan",
+  "./fish_assets/kraken_v2.glb":                     "Kraken",
+  "./fish_assets/moon_harvest_-_leviathan.glb":      "Moon Harvest Leviathan",
+  "./fish_assets/the_leviathan.glb":                 "Apex Leviathan",
+};
+
+const FISH_SPECIAL_LORE = {
+  "./fish_assets/guppy_fish.glb": "Fast learner of the shallows, small but fearless in open current.",
+  "./fish_assets/guppie_animated.glb": "A spark-tail drifter that bends light like polished sapphire.",
+  "./fish_assets/small_fish.glb": "A silver streak built for burst speed and clean escapes.",
+  "./fish_assets/redcap_oranda_goldfish.glb": "Elegant and flashy, this one turns every reef into a stage.",
+  "./fish_assets/feather_fish.glb": "A ribbon-swimmer that glides in silence before a sudden strike.",
+  "./fish_assets/bream_fish__dorade_royale.glb": "Royal plated and calm under pressure, steady in heavy tide.",
+  "./fish_assets/emperor_angelfish_update_v2.glb": "Color-rich ruler of reef lanes, precise and territorial.",
+  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb": "Ancient navigator with armor and patient power.",
+  "./fish_assets/model_65a_-_longnose_gar.glb": "Needle-jawed ambusher with razor timing.",
+  "./fish_assets/model_66a_-_atlantic_sturgeon.glb": "River legend with old-school endurance.",
+  "./fish_assets/tuna_fish.glb": "Open-water engine, relentless pace over impossible distance.",
+  "./fish_assets/manta_ray_birostris_animated.glb": "Winged giant of blue voids, graceful and unreadable.",
+  "./fish_assets/liriope_jellyfish_trachymedusae.glb": "Ghost-bell pulse with hypnotic drift patterns.",
+  "./fish_assets/shark.glb": "Pure apex intent, no wasted movement.",
+  "./fish_assets/nile_crocodile_swimming.glb": "Ancient hunter with brutal patience and explosive launch.",
+  "./fish_assets/cryptosuchus.glb": "Prehistoric menace armored for deep conflict.",
+  "./fish_assets/pistosaur_animated.glb": "Fossil-era cruiser that owns the mid-depth battlefield.",
+  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": "Unknown abyss class, observed but never fully understood.",
+  "./fish_assets/chelicerate.glb": "Alien frame from the trench, built to survive impossible pressure.",
+  "./fish_assets/model_99a_-_whale_shark.glb": "Mountain of the sea, massive but composed.",
+  "./fish_assets/whale.glb": "Black-and-white tactician, social, precise, and dominant.",
+  "./fish_assets/glow_whale.glb": "Bioluminescent colossus lighting the midnight ocean.",
+  "./fish_assets/shadow_leviathan.glb": "A myth in motion, seen only when the water goes silent.",
+  "./fish_assets/mega_whale.glb": "Final form of ocean force, the deep answers when it moves.",
+  "./fish_assets/tinkle_the_blue_ring_octopus.glb": "Small body, lethal signal; elegance with venomous precision.",
+  "./fish_assets/reefback.glb": "Living island of the reef, calm giant with tectonic presence.",
+  "./fish_assets/tulkun_swimming_loop.glb": "Ancient singer of blue canyons, gentle but unshakable.",
+  "./fish_assets/sea_monster_animated.glb": "Old-chart nightmare that tears through storm water.",
+  "./fish_assets/ghost_leviathan.glb": "Pale predator from blackout depths, felt before seen.",
+  "./fish_assets/kraken_v2.glb": "Tentacled catastrophe, chaos wrapped in intelligence.",
+  "./fish_assets/moon_harvest_-_leviathan.glb": "A lunar titan that rises when the current goes silver.",
+  "./fish_assets/the_leviathan.glb": "Crown beast of the abyss, absolute endgame energy.",
 };
 
 function fishNameFromPath(path) {
@@ -499,12 +761,38 @@ function fishNameFromPath(path) {
     ?? path.split("/").pop().replace(".glb", "").replaceAll("_", " ");
 }
 
+function fishLoreFromPath(path) {
+  return FISH_SPECIAL_LORE[path]
+    ?? "A rare creature from the deep, still waiting for its legend.";
+}
+
+function bucketIndex(value, limits) {
+  const safeValue = Math.max(0, value);
+  const idx = limits.findIndex((limit) => safeValue < limit);
+  return idx === -1 ? limits.length : idx;
+}
+
+function bucketLabel(index, limits, noun) {
+  if (index <= 0) return `< ${limits[0]} ${noun}`;
+  if (index >= limits.length) return `>= ${limits[limits.length - 1]} ${noun}`;
+  return `${limits[index - 1]} - ${limits[index] - 1} ${noun}`;
+}
+
 function chooseFishByGitHubStats(publicRepos, commitCount) {
-  const repoBoost = Math.max(0, publicRepos) * 120;
-  const score     = Math.max(0, commitCount) + repoBoost;
-  let tierIndex   = fishScoreThresholds.findIndex((limit) => score < limit);
-  if (tierIndex === -1) tierIndex = fishProgression.length - 1;
-  return { path: fishProgression[tierIndex], tierIndex, score, repoBoost };
+  const commitTier = bucketIndex(commitCount, COMMIT_BUCKET_LIMITS);
+  const repoTier   = bucketIndex(publicRepos, REPO_BUCKET_LIMITS);
+
+  let tierIndex = commitTier * REPO_BUCKETS + repoTier;
+  if (tierIndex >= fishProgression.length) tierIndex = fishProgression.length - 1;
+
+  return {
+    path: fishProgression[tierIndex],
+    tierIndex,
+    commitTier,
+    repoTier,
+    commitBand: bucketLabel(commitTier, COMMIT_BUCKET_LIMITS, "commits"),
+    repoBand: bucketLabel(repoTier, REPO_BUCKET_LIMITS, "repos"),
+  };
 }
 
 // ── Animated number counter ───────────────────────────────────────────────────
@@ -565,13 +853,17 @@ function hideOverlayFishName() {
   }, 450);
 }
 
+function setFishLore(path, mode = "assigned") {
+  const prefix = mode === "preview" ? "Preview" : "Assigned";
+  githubFishLore.textContent = `${prefix}: ${fishLoreFromPath(path)}`;
+}
 
-const TIER_COLORS = [
-  "#5bc8ff", "#38d9f5", "#22e8d8", "#20e896", // 1-4  blues → teal → mint
-  "#45ed6a", "#8cf53a", "#c0f230", "#f0e030", // 5-8  green → lime → yellow
-  "#f5b820", "#f08020", "#f05030", "#e02860", // 9-12 amber → orange → red
-  "#d030a0", "#a030e0", "#7040f8", "#ffd700", // 13-16 pink → purple → indigo → gold
-];
+
+const TIER_COLORS = fishProgression.map((_, i) => {
+  const t = fishProgression.length <= 1 ? 0 : i / (fishProgression.length - 1);
+  const hue = Math.round(196 - t * 168);
+  return `hsl(${hue} 82% 56%)`;
+});
 
 let previewingTierIndex = -1; // which tier cell the user is currently peeking at
 
@@ -596,13 +888,28 @@ const tierCells = [];
     // Click: preview that tier's fish in the overlay canvas
     cell.addEventListener("click", () => {
       if (transitionState !== "black") return;
-      if (previewingTierIndex === i) return;
+      if (previewingTierIndex === i) {
+        previewingTierIndex = -1;
+        previewFishPath = "";
+        overlayFishPreparedForPath = "";
+        overlayFishSpawn       = 0;
+        overlayFishSpawnTarget = 0;
+        overlayFishCanvas.style.opacity = "0";
+        hideOverlayFishName();
+        setFishLore(assignedTierFishPath || assignedFishPathForDive, "assigned");
+        tierCells.forEach((c, ci) => {
+          c.classList.remove("previewing");
+          c.classList.toggle("active", ci === diveTierIndex);
+          c.classList.toggle("below-active", ci < diveTierIndex);
+        });
+        return;
+      }
 
       // Update visual state of all cells
       tierCells.forEach((c, ci) => {
         c.classList.remove("previewing");
-        c.classList.toggle("active",       ci === diveTierIndex && i === diveTierIndex);
-        c.classList.toggle("below-active", ci < diveTierIndex  && i === diveTierIndex);
+        c.classList.toggle("active", ci === diveTierIndex);
+        c.classList.toggle("below-active", ci < diveTierIndex);
       });
       cell.classList.add("previewing");
       previewingTierIndex = i;
@@ -612,6 +919,7 @@ const tierCells = [];
       const newPath = fishProgression[i];
       if (previewFishPath !== newPath) {
         previewFishPath = newPath;
+        setFishLore(newPath, "preview");
         // Reset path guard so the animate loop triggers a fresh load
         overlayFishPreparedForPath = "";
         // Fade out current fish immediately
@@ -646,12 +954,16 @@ function resetTierGrid() {
 
 // ── GitHub panel ──────────────────────────────────────────────────────────────
 function setGithubPanelLoading(username) {
+  assignedTierFishPath = "";
   githubPanel.hidden = false;
   githubName.textContent      = "Loading GitHub profile...";
   githubUsername.textContent  = username || "-";
   githubRepos.textContent     = "-";
   githubCommits.textContent   = "-";
   githubFish.textContent      = "-";
+  githubCommitBand.textContent = "Commit band: -";
+  githubRepoBand.textContent = "Repo band: -";
+  githubFishLore.textContent = "Dive to unlock creature lore.";
   githubStatus.textContent    = "Fetching data...";
   resetTierGrid();
 }
@@ -663,17 +975,25 @@ function setGithubPanelData(data, tierIndex) {
   animateCounter(githubRepos,   data.publicRepos,  700);
   animateCounter(githubCommits, data.commitCount,  1100);
   githubFish.textContent    = data.assignedFish;
+  githubCommitBand.textContent = `Commit band: ${data.commitBand}`;
+  githubRepoBand.textContent = `Repo band: ${data.repoBand}`;
+  assignedTierFishPath = data.assignedFishPath || "";
+  setFishLore(assignedTierFishPath, "assigned");
   githubStatus.textContent  = data.note || "";
   activateTierGrid(tierIndex);
 }
 
 function setGithubPanelError(username, message) {
+  assignedTierFishPath = "";
   githubPanel.hidden = false;
   githubName.textContent      = "GitHub profile unavailable";
   githubUsername.textContent  = username || "-";
   githubRepos.textContent     = "-";
   githubCommits.textContent   = "-";
   githubFish.textContent      = "-";
+  githubCommitBand.textContent = "Commit band: -";
+  githubRepoBand.textContent = "Repo band: -";
+  githubFishLore.textContent = "No creature assigned yet.";
   githubStatus.textContent    = message;
   resetTierGrid();
 }
@@ -790,11 +1110,16 @@ async function showFish(index) {
   if (activeFishRig) fishScene.remove(activeFishRig);
 
   activeFish    = gltf.scene;
-  fitFishToView(activeFish);
+  fitFishToView(activeFish, path);
   activeBaseYaw = fishYawOverrides[path] ?? computeRightFacingYaw(activeFish);
+  activeMainTune = modelViewTune(path, "main");
 
   activeFishRig = new THREE.Group();
-  activeFishRig.rotation.y = activeBaseYaw;
+  activeFishRig.rotation.set(
+    activeMainTune.pitch,
+    activeBaseYaw + activeMainTune.yaw,
+    activeMainTune.roll
+  );
   activeFishRig.add(activeFish);
   fishScene.add(activeFishRig);
 
@@ -851,6 +1176,7 @@ async function prepareOverlayFish(path) {
     overlayFishScene.remove(overlayFishRig);
     overlayFishRig = null;
   }
+  lastOverlayMeshOpacity = -1;
   if (overlayFishMixer) {
     overlayFishMixer.stopAllAction();
     overlayFishMixer = null;
@@ -867,18 +1193,25 @@ async function prepareOverlayFish(path) {
     overlayFishScene.remove(overlayFishRig);
     overlayFishRig = null;
   }
+  lastOverlayMeshOpacity = -1;
   if (overlayFishMixer) {
     overlayFishMixer.stopAllAction();
     overlayFishMixer = null;
   }
 
   const model = gltf.scene;
-  fitFishToOverlay(model, tierScaleForPath(path));
+  fitFishToOverlay(model, path, tierScaleForPath(path));
   overlayFishBaseYaw = fishYawOverrides[path] ?? computeRightFacingYaw(model);
+  activeOverlayTune = modelViewTune(path, "overlay");
   overlayFishRig     = new THREE.Group();
-  overlayFishRig.rotation.y = overlayFishBaseYaw;
+  overlayFishRig.rotation.set(
+    activeOverlayTune.pitch,
+    overlayFishBaseYaw + activeOverlayTune.yaw,
+    activeOverlayTune.roll
+  );
   overlayFishRig.add(model);
   setObjectOpacity(overlayFishRig, 0);
+  lastOverlayMeshOpacity = 0;
   overlayFishScene.add(overlayFishRig);
 
   if (Array.isArray(gltf.animations) && gltf.animations.length > 0) {
@@ -958,8 +1291,11 @@ function startGitHubFetchFlow(username) {
 
       const assignedFish = fishNameFromPath(fishAssignment.path);
       githubData.assignedFish = assignedFish;
+      githubData.assignedFishPath = fishAssignment.path;
+      githubData.commitBand = fishAssignment.commitBand;
+      githubData.repoBand = fishAssignment.repoBand;
 
-      const mappingNote = `Score ${fishAssignment.score.toLocaleString()} = ${githubData.commitCount.toLocaleString()} commits + ${fishAssignment.repoBoost.toLocaleString()} repo boost.`;
+      const mappingNote = `Tier ${fishAssignment.tierIndex + 1}: commit bucket ${fishAssignment.commitTier + 1} + repo bucket ${fishAssignment.repoTier + 1}.`;
       githubData.note = githubData.note ? `${githubData.note} ${mappingNote}` : mappingNote;
 
       setGithubPanelData(githubData, fishAssignment.tierIndex);
@@ -1044,6 +1380,7 @@ returnBtn.addEventListener("click", () => {
     activeFishRig = null;
     activeFish    = null;
   }
+  activeMainTune = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 };
   if (activeMixer) {
     activeMixer.stopAllAction();
     activeMixer = null;
@@ -1056,6 +1393,9 @@ returnBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", () => {
+  bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxBgDpr));
+  fishRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxFishDpr));
+  overlayFishRenderer.setPixelRatio(Math.min(window.devicePixelRatio, PERFORMANCE.maxOverlayDpr));
   bgRenderer.setSize(window.innerWidth, window.innerHeight);
   fishRenderer.setSize(window.innerWidth, window.innerHeight);
   uniforms.iResolution.value.set(window.innerWidth, window.innerHeight, 1);
@@ -1116,7 +1456,9 @@ function animate() {
     if (diveDataReady && diveDataOk && assignedFishPathForDive) {
       // Use previewFishPath (tier click) if set, otherwise show assigned fish
       const fishToShow = previewFishPath || assignedFishPathForDive;
-      prepareOverlayFish(fishToShow).catch((error) => console.error(error));
+      if (overlayFishPreparedForPath !== fishToShow) {
+        prepareOverlayFish(fishToShow).catch((error) => console.error(error));
+      }
       overlayFishSpawnTarget = 1;
       // Show name label once fish starts fading in
       if (overlayFishSpawn > 0.05) showOverlayFishName(fishToShow);
@@ -1144,12 +1486,15 @@ function animate() {
       warpInput.value   = "";
       githubPanel.hidden = true;
       assignedFishPathForDive = "";
+      assignedTierFishPath = "";
       resetOverlayVideos();
       overlayFishPreparedForPath = "";
       if (overlayFishRig) {
         overlayFishScene.remove(overlayFishRig);
         overlayFishRig = null;
       }
+      lastOverlayMeshOpacity = -1;
+      activeOverlayTune = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0, roll: 0 };
       if (overlayFishMixer) {
         overlayFishMixer.stopAllAction();
         overlayFishMixer = null;
@@ -1194,9 +1539,14 @@ function animate() {
 
   if (activeFishRig) {
     const spawn = easeOutCubic(clamp01(fishSpawn));
-    activeFishRig.position.x = -8.0 + spawn * 8.0;
-    activeFishRig.position.y = fishBaseYOffset + 0.3 + Math.sin(elapsedTime * 1.6) * 0.12;
-    if (!activeFishHasClips) activeFishRig.rotation.y = activeBaseYaw;
+    activeFishRig.position.x = -8.0 + spawn * 8.0 + activeMainTune.x;
+    activeFishRig.position.y = fishBaseYOffset + 0.3 + Math.sin(elapsedTime * 1.6) * 0.12 + activeMainTune.y;
+    activeFishRig.position.z = activeMainTune.z;
+    activeFishRig.rotation.set(
+      activeMainTune.pitch,
+      activeBaseYaw + activeMainTune.yaw,
+      activeMainTune.roll
+    );
   }
 
   if (overlayFishRig) {
@@ -1204,10 +1554,18 @@ function animate() {
     overlayFishCanvas.style.opacity = String(spawn);
     overlayFishRig.scale.setScalar(0.62 + spawn * 0.38);
     // Centre fish horizontally in the canvas; gentle Y float around true centre
-    overlayFishRig.position.x = -0.3 + easeInOutCubic(spawn) * 0.3;
-    overlayFishRig.position.y = 0.0 + Math.sin(elapsedTime * 1.2) * 0.08;
-    overlayFishRig.rotation.y = overlayFishBaseYaw + (1 - spawn) * 0.35;
-    setObjectOpacity(overlayFishRig, spawn);
+    overlayFishRig.position.x = -0.3 + easeInOutCubic(spawn) * 0.3 + activeOverlayTune.x;
+    overlayFishRig.position.y = 0.0 + Math.sin(elapsedTime * 1.2) * 0.08 + activeOverlayTune.y;
+    overlayFishRig.position.z = activeOverlayTune.z;
+    overlayFishRig.rotation.set(
+      activeOverlayTune.pitch,
+      overlayFishBaseYaw + (1 - spawn) * 0.35 + activeOverlayTune.yaw,
+      activeOverlayTune.roll
+    );
+    if (Math.abs(spawn - lastOverlayMeshOpacity) >= PERFORMANCE.overlayOpacityStep) {
+      setObjectOpacity(overlayFishRig, spawn);
+      lastOverlayMeshOpacity = spawn;
+    }
     overlayFishRenderer.render(overlayFishScene, overlayFishCamera);
   }
 
