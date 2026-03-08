@@ -30,7 +30,7 @@
 
 @font-face {
   font-family: "Ginga";
-  src: url("./fonts/Ginga-r09p.ttf") format("truetype");
+  src: url("../assets/fonts/Ginga-r09p.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -180,6 +180,44 @@ html, body {
   opacity: 0;
   border-radius: 1rem;
   pointer-events: none;
+}
+
+#model-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.42rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(160, 226, 255, 0.35);
+  background: rgba(9, 34, 58, 0.5);
+  color: #d6f3ff;
+  font-size: 0.84rem;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 20px rgba(0, 20, 44, 0.3);
+}
+#model-loader[hidden] {
+  display: none !important;
+}
+.loader-spinner {
+  width: 0.92rem;
+  height: 0.92rem;
+  border-radius: 50%;
+  border: 2px solid rgba(173, 233, 255, 0.28);
+  border-top-color: #84defe;
+  animation: modelLoaderSpin 0.8s linear infinite;
+}
+.loader-text {
+  white-space: nowrap;
+}
+
+@keyframes modelLoaderSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* ── Fish name label above the canvas ── */

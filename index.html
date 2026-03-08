@@ -6,18 +6,18 @@
     <title>Github Ocean</title>
     <link
       rel="preload"
-      href="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4"
+      href="./assets/media/yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4"
       as="video"
       type="video/mp4"
     />
     <!-- Favicons -->
-    <link rel="icon" type="image/x-icon"       href="./favicon.ico" />
-    <link rel="icon" type="image/png" sizes="16x16"  href="./favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="32x32"  href="./favicon-32x32.png" />
-    <link rel="apple-touch-icon" sizes="180x180"     href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/x-icon"       href="./assets/icons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16"  href="./assets/icons/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32"  href="./assets/icons/favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180"     href="./assets/icons/apple-touch-icon.png" />
     <link rel="manifest"                             href="./site.webmanifest" />
     <meta name="theme-color"                  content="#061424" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./src/style.css" />
     <script type="importmap">
       {
         "imports": {
@@ -52,14 +52,19 @@
 
     <div id="black-overlay" aria-hidden="true">
       <video id="overlay-video-a" class="overlay-video is-active"
-        src="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
+        src="./assets/media/yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
       <video id="overlay-video-b" class="overlay-video"
-        src="./yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
+        src="./assets/media/yqa4hcjdexrmw0cwrygr27qhr0_result_.mp4" muted playsinline preload="auto"></video>
 
       <!-- Left pane: fish + viz labels -->
       <div class="overlay-left-pane">
         <!-- Fish name label — shown above the canvas -->
         <div id="overlay-fish-name" hidden></div>
+
+        <div id="model-loader" hidden>
+          <span class="loader-spinner" aria-hidden="true"></span>
+          <span class="loader-text">Loading creature...</span>
+        </div>
 
         <canvas id="overlay-fish-canvas" aria-hidden="true"></canvas>
 
@@ -123,6 +128,6 @@
       <button id="return-btn" type="button" hidden>↩ Return to ocean</button>
     </div>
 
-    <script type="module" src="main.js"></script>
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>

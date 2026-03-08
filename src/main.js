@@ -30,6 +30,7 @@ const githubRepoBand   = document.getElementById("github-repo-band");
 const githubFishLore   = document.getElementById("github-fish-lore");
 const overlayFishCanvas = document.getElementById("overlay-fish-canvas");
 const overlayFishNameEl = document.getElementById("overlay-fish-name");
+const modelLoaderEl    = document.getElementById("model-loader");
 
 const tierGridWrap    = document.getElementById("tier-grid-wrap");
 const tierGridEl      = document.getElementById("tier-grid");
@@ -132,7 +133,7 @@ const vertexShader = /* glsl */ `
   }
 `;
 
-const shaderSource = await fetch("./shaders/seascape.glsl").then((r) => r.text());
+const shaderSource = await fetch("../assets/shaders/seascape.glsl").then((r) => r.text());
 const patchedShaderSource = shaderSource.replace(
   /vec3\s+ori\s*=\s*vec3\(\s*0\.0\s*,\s*3\.5\s*,\s*time\*2\.2\s*\)\s*;/,
   "vec3 ori = vec3(0.0, 3.5 + uCameraYOffset, time*2.2);"
@@ -184,38 +185,38 @@ window.addEventListener("pointermove", (event) => {
 
 // ── Fish data ─────────────────────────────────────────────────────────────────
 const FISH_CATALOG = [
-  { name: "Guppy", path: "./fish_assets/guppy_fish.glb" },
-  { name: "Sapphire Guppie", path: "./fish_assets/guppie_animated.glb" },
-  { name: "Silver Dart", path: "./fish_assets/small_fish.glb" },
-  { name: "Crimson Oranda", path: "./fish_assets/redcap_oranda_goldfish.glb" },
-  { name: "Featherback", path: "./fish_assets/feather_fish.glb" },
-  { name: "Dorade Royale", path: "./fish_assets/bream_fish__dorade_royale.glb" },
-  { name: "Emperor Angelfish", path: "./fish_assets/emperor_angelfish_update_v2.glb" },
-  { name: "Loggerhead Titan", path: "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb" },
-  { name: "Longnose Gar", path: "./fish_assets/model_65a_-_longnose_gar.glb" },
-  { name: "Atlantic Sturgeon", path: "./fish_assets/model_66a_-_atlantic_sturgeon.glb" },
-  { name: "Bluefin Tuna", path: "./fish_assets/tuna_fish.glb" },
-  { name: "Giant Manta Ray", path: "./fish_assets/manta_ray_birostris_animated.glb" },
-  { name: "Liriope Jelly", path: "./fish_assets/liriope_jellyfish_trachymedusae.glb" },
-  { name: "Great White Shark", path: "./fish_assets/shark.glb" },
-  { name: "Nile Crocodile", path: "./fish_assets/nile_crocodile_swimming.glb" },
-  { name: "Cryptosuchus", path: "./fish_assets/cryptosuchus.glb" },
-  { name: "Pistosaur", path: "./fish_assets/pistosaur_animated.glb" },
-  { name: "Abyss Sentinel", path: "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb" },
-  { name: "Deep-Sea Chelicerate", path: "./fish_assets/chelicerate.glb" },
-  { name: "Whale Shark", path: "./fish_assets/model_99a_-_whale_shark.glb" },
-  { name: "Orca", path: "./fish_assets/whale.glb" },
-  { name: "Lumen Whale", path: "./fish_assets/glow_whale.glb" },
-  { name: "Shadow Leviathan", path: "./fish_assets/shadow_leviathan.glb" },
-  { name: "The Leviathan", path: "./fish_assets/mega_whale.glb" },
-  { name: "Blue Ring Octopus", path: "./fish_assets/tinkle_the_blue_ring_octopus.glb" },
-  { name: "Reefback", path: "./fish_assets/reefback.glb" },
-  { name: "Tulkun", path: "./fish_assets/tulkun_swimming_loop.glb" },
-  { name: "Sea Monster", path: "./fish_assets/sea_monster_animated.glb" },
-  { name: "Ghost Leviathan", path: "./fish_assets/ghost_leviathan.glb" },
-  { name: "Kraken", path: "./fish_assets/kraken_v2.glb" },
-  { name: "Moon Harvest Leviathan", path: "./fish_assets/moon_harvest_-_leviathan.glb" },
-  { name: "Apex Leviathan", path: "./fish_assets/the_leviathan.glb" },
+  { name: "Guppy", path: "../assets/models/guppy_fish.glb" },
+  { name: "Sapphire Guppie", path: "../assets/models/guppie_animated.glb" },
+  { name: "Silver Dart", path: "../assets/models/small_fish.glb" },
+  { name: "Crimson Oranda", path: "../assets/models/redcap_oranda_goldfish.glb" },
+  { name: "Featherback", path: "../assets/models/feather_fish.glb" },
+  { name: "Dorade Royale", path: "../assets/models/bream_fish__dorade_royale.glb" },
+  { name: "Emperor Angelfish", path: "../assets/models/emperor_angelfish_update_v2.glb" },
+  { name: "Loggerhead Titan", path: "../assets/models/model_47a_-_loggerhead_sea_turtle.glb" },
+  { name: "Longnose Gar", path: "../assets/models/model_65a_-_longnose_gar.glb" },
+  { name: "Atlantic Sturgeon", path: "../assets/models/model_66a_-_atlantic_sturgeon.glb" },
+  { name: "Bluefin Tuna", path: "../assets/models/tuna_fish.glb" },
+  { name: "Giant Manta Ray", path: "../assets/models/manta_ray_birostris_animated.glb" },
+  { name: "Liriope Jelly", path: "../assets/models/liriope_jellyfish_trachymedusae.glb" },
+  { name: "Great White Shark", path: "../assets/models/shark.glb" },
+  { name: "Nile Crocodile", path: "../assets/models/nile_crocodile_swimming.glb" },
+  { name: "Cryptosuchus", path: "../assets/models/cryptosuchus.glb" },
+  { name: "Pistosaur", path: "../assets/models/pistosaur_animated.glb" },
+  { name: "Abyss Sentinel", path: "../assets/models/f161272aebe34682bb0ff09ce7b76cc9.glb" },
+  { name: "Deep-Sea Chelicerate", path: "../assets/models/chelicerate.glb" },
+  { name: "Whale Shark", path: "../assets/models/model_99a_-_whale_shark.glb" },
+  { name: "Orca", path: "../assets/models/whale.glb" },
+  { name: "Lumen Whale", path: "../assets/models/glow_whale.glb" },
+  { name: "Shadow Leviathan", path: "../assets/models/shadow_leviathan.glb" },
+  { name: "The Leviathan", path: "../assets/models/mega_whale.glb" },
+  { name: "Blue Ring Octopus", path: "../assets/models/tinkle_the_blue_ring_octopus.glb" },
+  { name: "Reefback", path: "../assets/models/reefback.glb" },
+  { name: "Tulkun", path: "../assets/models/tulkun_swimming_loop.glb" },
+  { name: "Sea Monster", path: "../assets/models/sea_monster_animated.glb" },
+  { name: "Ghost Leviathan", path: "../assets/models/ghost_leviathan.glb" },
+  { name: "Kraken", path: "../assets/models/kraken_v2.glb" },
+  { name: "Moon Harvest Leviathan", path: "../assets/models/moon_harvest_-_leviathan.glb" },
+  { name: "Apex Leviathan", path: "../assets/models/the_leviathan.glb" },
 ];
 
 const FISH_NAME_TO_PATH = Object.fromEntries(FISH_CATALOG.map(({ name, path }) => [name, path]));
@@ -403,11 +404,67 @@ let audioCtx   = null;
 let oceanNodes = null;
 let soundOn    = false;
 let soundSuspendTimer = null;
+let oceanGainTarget = -1;
+let fishSoundEl = null;
+let fishSoundName = "";
+const fishSoundFailedNames = new Set();
+const OCEAN_BASE_GAIN = 0.55;
+const FISH_SOUND_GAIN = 0.34;
+
+// Optional: add explicit paths for fish sounds.
+// If not listed here, app will try: ../assets/audio/fish/<slug>.mp3
+const FISH_SOUND_PATH_OVERRIDES = {
+};
 
 function setSoundUiState(isOn) {
   soundBtn.setAttribute("aria-pressed", String(isOn));
   soundBtn.title = isOn ? "Mute ocean sound" : "Unmute ocean sound";
   soundIcon.textContent = isOn ? "🔊" : "🔇";
+}
+
+function fishSoundPathForName(name) {
+  const explicitPath = FISH_SOUND_PATH_OVERRIDES[name];
+  if (explicitPath) return explicitPath;
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  return `../assets/audio/fish/${slug}.mp3`;
+}
+
+function setOceanGain(target, smooth = 0.25) {
+  if (!audioCtx || !oceanNodes) return;
+  if (Math.abs(target - oceanGainTarget) < 1e-3) return;
+  oceanGainTarget = target;
+  oceanNodes.master.gain.cancelScheduledValues(audioCtx.currentTime);
+  oceanNodes.master.gain.setTargetAtTime(target, audioCtx.currentTime, smooth);
+}
+
+function stopFishSound() {
+  if (!fishSoundEl) return;
+  fishSoundEl.pause();
+  fishSoundEl.currentTime = 0;
+  fishSoundEl.src = "";
+  fishSoundEl = null;
+  fishSoundName = "";
+}
+
+async function playFishSoundForPath(path) {
+  const name = fishNameFromPath(path);
+  if (!name || !soundOn || fishSoundFailedNames.has(name)) return;
+  if (fishSoundName === name && fishSoundEl && !fishSoundEl.paused) return;
+
+  stopFishSound();
+
+  const audio = new Audio(fishSoundPathForName(name));
+  audio.loop = true;
+  audio.preload = "auto";
+  audio.volume = FISH_SOUND_GAIN;
+  fishSoundEl = audio;
+  fishSoundName = name;
+  try {
+    await audio.play();
+  } catch {
+    fishSoundFailedNames.add(name);
+    stopFishSound();
+  }
 }
 
 
@@ -492,8 +549,7 @@ async function startOcean() {
     await audioCtx.resume();
   }
 
-  oceanNodes.master.gain.cancelScheduledValues(audioCtx.currentTime);
-  oceanNodes.master.gain.setTargetAtTime(0.55, audioCtx.currentTime, 0.35);
+  setOceanGain(OCEAN_BASE_GAIN, 0.35);
   soundOn = true;
   setSoundUiState(true);
 }
@@ -502,13 +558,14 @@ function stopOcean() {
   if (!audioCtx || !oceanNodes) {
     soundOn = false;
     setSoundUiState(false);
+    stopFishSound();
     return;
   }
 
-  oceanNodes.master.gain.cancelScheduledValues(audioCtx.currentTime);
-  oceanNodes.master.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.2);
+  setOceanGain(0.0, 0.2);
   soundOn = false;
   setSoundUiState(false);
+  stopFishSound();
 
   if (soundSuspendTimer) clearTimeout(soundSuspendTimer);
   soundSuspendTimer = setTimeout(() => {
@@ -547,6 +604,23 @@ const bootstrapOceanAudio = () => {
 };
 window.addEventListener("pointerdown", bootstrapOceanAudio, { once: true });
 window.addEventListener("keydown", bootstrapOceanAudio, { once: true });
+
+function syncSoundscape(activeFishPath = "") {
+  if (!soundOn) {
+    stopFishSound();
+    setOceanGain(0.0, 0.2);
+    return;
+  }
+
+  const inFishView = transitionState === "black" && !!activeFishPath;
+  if (inFishView) {
+    setOceanGain(0.0, 0.18);
+    playFishSoundForPath(activeFishPath).catch(() => {});
+  } else {
+    stopFishSound();
+    setOceanGain(OCEAN_BASE_GAIN, 0.35);
+  }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function clamp01(v) { return Math.min(1, Math.max(0, v)); }
@@ -689,38 +763,38 @@ const FISH_DISPLAY_NAMES = Object.fromEntries(
 );
 
 const FISH_SPECIAL_LORE = {
-  "./fish_assets/guppy_fish.glb": "Fast learner of the shallows, small but fearless in open current.",
-  "./fish_assets/guppie_animated.glb": "A spark-tail drifter that bends light like polished sapphire.",
-  "./fish_assets/small_fish.glb": "A silver streak built for burst speed and clean escapes.",
-  "./fish_assets/redcap_oranda_goldfish.glb": "Elegant and flashy, this one turns every reef into a stage.",
-  "./fish_assets/feather_fish.glb": "A ribbon-swimmer that glides in silence before a sudden strike.",
-  "./fish_assets/bream_fish__dorade_royale.glb": "Royal plated and calm under pressure, steady in heavy tide.",
-  "./fish_assets/emperor_angelfish_update_v2.glb": "Color-rich ruler of reef lanes, precise and territorial.",
-  "./fish_assets/model_47a_-_loggerhead_sea_turtle.glb": "Ancient navigator with armor and patient power.",
-  "./fish_assets/model_65a_-_longnose_gar.glb": "Needle-jawed ambusher with razor timing.",
-  "./fish_assets/model_66a_-_atlantic_sturgeon.glb": "River legend with old-school endurance.",
-  "./fish_assets/tuna_fish.glb": "Open-water engine, relentless pace over impossible distance.",
-  "./fish_assets/manta_ray_birostris_animated.glb": "Winged giant of blue voids, graceful and unreadable.",
-  "./fish_assets/liriope_jellyfish_trachymedusae.glb": "Ghost-bell pulse with hypnotic drift patterns.",
-  "./fish_assets/shark.glb": "Pure apex intent, no wasted movement.",
-  "./fish_assets/nile_crocodile_swimming.glb": "Ancient hunter with brutal patience and explosive launch.",
-  "./fish_assets/cryptosuchus.glb": "Prehistoric menace armored for deep conflict.",
-  "./fish_assets/pistosaur_animated.glb": "Fossil-era cruiser that owns the mid-depth battlefield.",
-  "./fish_assets/f161272aebe34682bb0ff09ce7b76cc9.glb": "Unknown abyss class, observed but never fully understood.",
-  "./fish_assets/chelicerate.glb": "Alien frame from the trench, built to survive impossible pressure.",
-  "./fish_assets/model_99a_-_whale_shark.glb": "Mountain of the sea, massive but composed.",
-  "./fish_assets/whale.glb": "Black-and-white tactician, social, precise, and dominant.",
-  "./fish_assets/glow_whale.glb": "Bioluminescent colossus lighting the midnight ocean.",
-  "./fish_assets/shadow_leviathan.glb": "A myth in motion, seen only when the water goes silent.",
-  "./fish_assets/mega_whale.glb": "Final form of ocean force, the deep answers when it moves.",
-  "./fish_assets/tinkle_the_blue_ring_octopus.glb": "Small body, lethal signal; elegance with venomous precision.",
-  "./fish_assets/reefback.glb": "Living island of the reef, calm giant with tectonic presence.",
-  "./fish_assets/tulkun_swimming_loop.glb": "Ancient singer of blue canyons, gentle but unshakable.",
-  "./fish_assets/sea_monster_animated.glb": "Old-chart nightmare that tears through storm water.",
-  "./fish_assets/ghost_leviathan.glb": "Pale predator from blackout depths, felt before seen.",
-  "./fish_assets/kraken_v2.glb": "Tentacled catastrophe, chaos wrapped in intelligence.",
-  "./fish_assets/moon_harvest_-_leviathan.glb": "A lunar titan that rises when the current goes silver.",
-  "./fish_assets/the_leviathan.glb": "Crown beast of the abyss, absolute endgame energy.",
+  "../assets/models/guppy_fish.glb": "Fast learner of the shallows, small but fearless in open current.",
+  "../assets/models/guppie_animated.glb": "A spark-tail drifter that bends light like polished sapphire.",
+  "../assets/models/small_fish.glb": "A silver streak built for burst speed and clean escapes.",
+  "../assets/models/redcap_oranda_goldfish.glb": "Elegant and flashy, this one turns every reef into a stage.",
+  "../assets/models/feather_fish.glb": "A ribbon-swimmer that glides in silence before a sudden strike.",
+  "../assets/models/bream_fish__dorade_royale.glb": "Royal plated and calm under pressure, steady in heavy tide.",
+  "../assets/models/emperor_angelfish_update_v2.glb": "Color-rich ruler of reef lanes, precise and territorial.",
+  "../assets/models/model_47a_-_loggerhead_sea_turtle.glb": "Ancient navigator with armor and patient power.",
+  "../assets/models/model_65a_-_longnose_gar.glb": "Needle-jawed ambusher with razor timing.",
+  "../assets/models/model_66a_-_atlantic_sturgeon.glb": "River legend with old-school endurance.",
+  "../assets/models/tuna_fish.glb": "Open-water engine, relentless pace over impossible distance.",
+  "../assets/models/manta_ray_birostris_animated.glb": "Winged giant of blue voids, graceful and unreadable.",
+  "../assets/models/liriope_jellyfish_trachymedusae.glb": "Ghost-bell pulse with hypnotic drift patterns.",
+  "../assets/models/shark.glb": "Pure apex intent, no wasted movement.",
+  "../assets/models/nile_crocodile_swimming.glb": "Ancient hunter with brutal patience and explosive launch.",
+  "../assets/models/cryptosuchus.glb": "Prehistoric menace armored for deep conflict.",
+  "../assets/models/pistosaur_animated.glb": "Fossil-era cruiser that owns the mid-depth battlefield.",
+  "../assets/models/f161272aebe34682bb0ff09ce7b76cc9.glb": "Unknown abyss class, observed but never fully understood.",
+  "../assets/models/chelicerate.glb": "Alien frame from the trench, built to survive impossible pressure.",
+  "../assets/models/model_99a_-_whale_shark.glb": "Mountain of the sea, massive but composed.",
+  "../assets/models/whale.glb": "Black-and-white tactician, social, precise, and dominant.",
+  "../assets/models/glow_whale.glb": "Bioluminescent colossus lighting the midnight ocean.",
+  "../assets/models/shadow_leviathan.glb": "A myth in motion, seen only when the water goes silent.",
+  "../assets/models/mega_whale.glb": "Final form of ocean force, the deep answers when it moves.",
+  "../assets/models/tinkle_the_blue_ring_octopus.glb": "Small body, lethal signal; elegance with venomous precision.",
+  "../assets/models/reefback.glb": "Living island of the reef, calm giant with tectonic presence.",
+  "../assets/models/tulkun_swimming_loop.glb": "Ancient singer of blue canyons, gentle but unshakable.",
+  "../assets/models/sea_monster_animated.glb": "Old-chart nightmare that tears through storm water.",
+  "../assets/models/ghost_leviathan.glb": "Pale predator from blackout depths, felt before seen.",
+  "../assets/models/kraken_v2.glb": "Tentacled catastrophe, chaos wrapped in intelligence.",
+  "../assets/models/moon_harvest_-_leviathan.glb": "A lunar titan that rises when the current goes silver.",
+  "../assets/models/the_leviathan.glb": "Crown beast of the abyss, absolute endgame energy.",
 };
 
 function fishNameFromPath(path) {
@@ -1128,6 +1202,30 @@ function resizeOverlayFishRenderer() {
 // ── prepareOverlayFish ────────────────────────────────────────────────────────
 // Uses a load-token to discard stale async results from rapid clicks.
 let overlayFishLoadToken = 0;
+let modelLoaderToken = 0;
+let modelLoaderPending = false;
+
+function showModelLoader(token) {
+  if (!modelLoaderEl) return;
+  if (Number.isFinite(token)) modelLoaderToken = token;
+  modelLoaderPending = true;
+  modelLoaderEl.hidden = false;
+}
+
+function hideModelLoader(token) {
+  if (!modelLoaderEl) return;
+  if (Number.isFinite(token) && token !== modelLoaderToken) return;
+  modelLoaderPending = false;
+  modelLoaderEl.hidden = true;
+}
+
+function hideModelLoaderIfFishVisible(spawnAmount) {
+  if (!modelLoaderEl || !modelLoaderPending) return;
+  if (!overlayFishRig) return;
+  if (spawnAmount <= 0.005) return;
+  modelLoaderPending = false;
+  modelLoaderEl.hidden = true;
+}
 
 async function prepareOverlayFish(path) {
   if (!path) return;
@@ -1140,6 +1238,7 @@ async function prepareOverlayFish(path) {
   // Claim a unique token for this load.
   // Any previous in-flight load that completes after us will see a mismatch and bail out.
   const token = ++overlayFishLoadToken;
+  showModelLoader(token);
 
   // Lock the path guard immediately so the frame-loop doesn't also queue a load.
   overlayFishPreparedForPath = path;
@@ -1156,11 +1255,20 @@ async function prepareOverlayFish(path) {
     overlayFishMixer = null;
   }
 
-  const gltf = await loader.loadAsync(path);
-  await patchLegacySpecGloss(gltf);
+  let gltf;
+  try {
+    gltf = await loader.loadAsync(path);
+    await patchLegacySpecGloss(gltf);
+  } catch (error) {
+    hideModelLoader(token);
+    throw error;
+  }
 
   // If a newer load has started since, discard this result — don't add to scene.
-  if (token !== overlayFishLoadToken) return;
+  if (token !== overlayFishLoadToken) {
+    hideModelLoader(token);
+    return;
+  }
 
   // Also clear any rig a concurrent load may have sneaked in.
   if (overlayFishRig) {
@@ -1392,6 +1500,7 @@ function animate() {
   const delta = clock.getDelta();
   elapsedTime   += delta;
   transitionTimer += delta;
+  let activeSoundFishPath = "";
 
   // ── Transition state machine ──
   if (transitionState === "accelerating") {
@@ -1443,6 +1552,7 @@ function animate() {
       overlayFishSpawnTarget = 1;
       // Show name label once fish starts fading in
       if (overlayFishSpawn > 0.05) showOverlayFishName(fishToShow);
+      if (overlayFishSpawn > 0.05) activeSoundFishPath = fishToShow;
       // Show fish viz once when assigned data is ready (not on tier previews)
       if (!vizShown && !previewFishPath) {
         vizShown = true;
@@ -1495,6 +1605,11 @@ function animate() {
 
   blackOverlay.style.opacity = String(overlayOpacity);
   updateOverlayLoop(delta);
+  syncSoundscape(activeSoundFishPath);
+
+  if (transitionState !== "black" && modelLoaderPending) {
+    hideModelLoader();
+  }
 
   // Lerp camera parallax (smooth mouse follow)
   cameraPrlxX += (targetCameraParallaxX - cameraPrlxX) * Math.min(1, delta * 2.0);
@@ -1533,6 +1648,7 @@ function animate() {
   if (overlayFishRig) {
     const spawn = easeOutCubic(clamp01(overlayFishSpawn));
     overlayFishCanvas.style.opacity = String(spawn);
+    hideModelLoaderIfFishVisible(spawn);
     overlayFishRig.scale.setScalar(0.62 + spawn * 0.38);
     // Centre fish horizontally in the canvas; gentle Y float around true centre
     overlayFishRig.position.x = -0.3 + easeInOutCubic(spawn) * 0.3 + activeOverlayTune.x;
