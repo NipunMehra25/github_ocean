@@ -1,6 +1,9 @@
+import { inject } from "@vercel/analytics";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+inject();
 
 const PERFORMANCE = {
   maxBgDpr: 1.25,
