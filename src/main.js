@@ -1393,13 +1393,13 @@ function startGitHubFetchFlow(username) {
       diveDataReady   = true;
     })
     .catch((error) => {
-      const errorCode = error?.message || "";
-      if (errorCode === "404") {
+      const statusCode = Number(error?.status);
+      if (statusCode === 404) {
         setGithubPanelError(username, "Username not found on GitHub.");
-      } else if (errorCode === "403") {
+      } else if (statusCode === 403 || statusCode === 503) {
         setGithubPanelError(username, formatGithubRateLimitMessage(error));
       } else {
-        setGithubPanelError(username, "Failed to fetch GitHub profile.");
+        setGithubPanelError(username, error?.message || "Failed to fetch GitHub profile.");
       }
       diveDataOk      = false;
       diveDataMessage = "GitHub data failed.";
