@@ -84,6 +84,9 @@ Open:
 - `http://localhost:3000` for `serve`
 - `http://localhost:8080` for Python
 
+For deployed use on Vercel, this project should call the bundled serverless API, not GitHub directly from the browser.
+Set `GITHUB_TOKEN` in your Vercel project environment variables before deploying.
+
 ## Architecture
 
 ### High-Level Runtime
@@ -384,20 +387,27 @@ Main responsive regions:
 
 ### GitHub fetch fails
 
-- Verify username exists.
-- Check rate limits/network.
-- Retry after short delay.
+- Verify the username exists.
+- If deployed on Vercel, confirm `GITHUB_TOKEN` is set in Project Settings -> Environment Variables.
+- Redeploy after adding or changing `GITHUB_TOKEN`.
+- If you are testing locally, use `vercel dev` so `/api/github` is available.
+- Check the browser Network tab for `/api/github?username=...` and inspect the returned JSON error.
 
 ## Deployment
 
-This is a static site.
+This project now uses a Vercel serverless API for GitHub lookups.
 
-You can deploy directly to:
+Deploy on Vercel:
 
-- GitHub Pages
-- Netlify
-- Vercel static hosting
-- Any CDN/static bucket
+1. Import the repo into Vercel.
+2. Add `GITHUB_TOKEN` in Project Settings -> Environment Variables.
+3. Redeploy.
+
+For local development with the API route, run:
+
+```bash
+vercel dev
+```
 
 Ensure all `assets/` paths are preserved exactly.
 
@@ -412,4 +422,3 @@ Ensure all `assets/` paths are preserved exactly.
 ---
 
 Built with Three.js and custom ocean visuals. Project maintained by Nipun Mehra.
-

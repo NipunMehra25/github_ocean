@@ -1044,45 +1044,45 @@ async function fetchJson(url, timeoutMs = 8000, extraHeaders = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
+    const headers = {
+      Accept: "application/json",
+      ...extraHeaders,
+    };
+
     const response = await fetch(url, {
-      headers: {
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        ...extraHeaders,
-      },
+      headers,
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(String(response.status));
+
+    if (!response.ok) {
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      const message = payload?.error || payload?.detail || String(response.status);
+      const error = new Error(message);
+      error.status = response.status;
+      error.payload = payload;
+      throw error;
+    }
+
     return await response.json();
   } finally {
     clearTimeout(timeout);
   }
 }
 
+function formatGithubRateLimitMessage(error) {
+  return error?.message || "GitHub API access was denied.";
+}
+
 async function fetchGithubStats(usernameRaw) {
   const username   = usernameRaw.trim();
-  const userUrl    = `https://api.github.com/users/${encodeURIComponent(username)}`;
-  const commitsUrl = `https://api.github.com/search/commits?q=author:${encodeURIComponent(username)}`;
-
-  const user = await fetchJson(userUrl);
-  let commitCount = 0;
-  let note = "";
-
-  try {
-    const commits = await fetchJson(commitsUrl);
-    commitCount   = Number.isFinite(commits.total_count) ? commits.total_count : 0;
-    if (commitCount >= 1000) note = "Commit count may be truncated by GitHub search indexing.";
-  } catch {
-    note = "Commit count unavailable due to GitHub API limits.";
-  }
-
-  return {
-    displayName: user.name || username,
-    username:    user.login || username,
-    publicRepos: user.public_repos ?? 0,
-    commitCount,
-    note,
-  };
+  const apiUrl = `/api/github?username=${encodeURIComponent(username)}`;
+  return await fetchJson(apiUrl);
 }
 
 // ── GLTF helpers ──────────────────────────────────────────────────────────────
@@ -1397,7 +1397,7 @@ function startGitHubFetchFlow(username) {
       if (errorCode === "404") {
         setGithubPanelError(username, "Username not found on GitHub.");
       } else if (errorCode === "403") {
-        setGithubPanelError(username, "GitHub API rate limit reached. Try again shortly.");
+        setGithubPanelError(username, formatGithubRateLimitMessage(error));
       } else {
         setGithubPanelError(username, "Failed to fetch GitHub profile.");
       }
@@ -1538,11 +1538,6 @@ function animate() {
     targetCameraParallaxY = mouseNormY * 0.04;
 
     returnBtn.hidden = !diveDataReady;
-    if (!diveDataReady) {
-      githubStatus.textContent = "Fetching GitHub data...";
-    } else if (diveDataMessage) {
-      githubStatus.textContent = diveDataMessage;
-    }
     if (diveDataReady && diveDataOk && assignedFishPathForDive) {
       // Use previewFishPath (tier click) if set, otherwise show assigned fish
       const fishToShow = previewFishPath || assignedFishPathForDive;
