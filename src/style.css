@@ -82,7 +82,68 @@ html, body {
   font-size: clamp(1.6rem, 3.8vw, 3rem);
   font-weight: 400; letter-spacing: 0.03em;
 }
+.hero-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.hero-title-link:hover { opacity: 0.86; }
+.hero-title-link:focus-visible {
+  outline: 2px solid #b9ebff;
+  outline-offset: 4px;
+  border-radius: 0.35rem;
+}
 .hero p { margin: 0; font-size: clamp(1rem, 2vw, 2rem); }
+
+.social-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  gap: 0.85rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(188, 235, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(7, 24, 41, 0.34);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 38px rgba(0, 22, 47, 0.24);
+}
+.social-dock__link {
+  min-width: 3.25rem;
+  height: 3.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 244, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f2fbff;
+  text-decoration: none;
+  font-size: 0.98rem;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.social-dock__link:hover {
+  transform: translateY(-3px);
+  background: rgba(129, 218, 255, 0.14);
+  border-color: rgba(210, 244, 255, 0.52);
+}
+.social-dock__link:focus-visible {
+  outline: 2px solid #b9ebff;
+  outline-offset: 3px;
+}
+.social-dock__link svg {
+  width: 1.45rem;
+  height: 1.45rem;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+.social-dock__link span {
+  white-space: nowrap;
+}
 
 /* ── Warp Panel ── */
 .warp-panel {
@@ -540,6 +601,17 @@ html, body {
 
   .warp-panel { top: 58%; width: min(92vw, 30rem); }
   .warp-panel input { width: 100%; font-size: 0.95rem; }
+  .social-dock {
+    bottom: 1rem;
+    gap: 0.6rem;
+    padding: 0.45rem 0.55rem;
+  }
+  .social-dock__link {
+    min-width: 0;
+    height: 2.9rem;
+    padding: 0 0.8rem;
+    font-size: 0.9rem;
+  }
 
   .overlay-left-pane {
     left: 0.75rem;
